@@ -15,6 +15,7 @@ public class RunConcurrent {
     private static final Object monitor = new Object();
     private Connection connection = null;
     private String sql = null;
+    int sleepTime = 3000;
 
     private RunConcurrent() {
         Properties props = new Properties();
@@ -24,6 +25,7 @@ public class RunConcurrent {
             String username = props.getProperty("db.username");
             String password = props.getProperty("db.password");
             this.sql = props.getProperty("sql");
+            this.sleepTime = Integer.parseInt(props.getProperty("sleep.ms"));
 
             Class.forName(props.getProperty("db.driver"));
             this.connection = DriverManager.getConnection(url, username, password);
@@ -65,6 +67,9 @@ public class RunConcurrent {
         };
 
         for (int i = 0; i < threadCount; i++) {
+            try {
+                Thread.sleep(app.sleepTime);
+            } catch (Exception e) {}
             tpe.execute(doQuery);
         }
     }
